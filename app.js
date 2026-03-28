@@ -1271,11 +1271,11 @@ function renderItemCard(item) {
   
   let statusText = '';
   if (status === 'expired') {
-    statusText = `Expired ${Math.abs(days)}d ago`;
+    statusText = `EXPIRED ${Math.abs(days)}d ago`;
   } else if (days === Infinity) {
-    statusText = 'No expiry';
+    statusText = '- -';
   } else {
-    statusText = `${days}d left`;
+    statusText = `${days}d to-expire`;
   }
   
   return `
