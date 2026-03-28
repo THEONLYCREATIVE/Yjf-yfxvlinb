@@ -19,7 +19,7 @@
 const CONFIG = {
   DB_NAME: 'ExpiryTrackerProDB',
   DB_VERSION: 3,
-  EXPIRY_SOON_DAYS: 90,
+  EXPIRY_SOON_MONTHS: 90,  // Changed from EXPIRY_SOON_DAYS to EXPIRY_SOON_MONTHS
   VERSION: '6.0.0',
   
   // API Configuration
@@ -61,6 +61,7 @@ const App = {
 };
 
 // ============================================
+// ============================================
 // UTILITY FUNCTIONS
 // ============================================
 const Utils = {
@@ -86,10 +87,30 @@ const Utils = {
     return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
   },
 
+  // NEW: Calculate months until expiry
+  monthsUntil(dateStr) {
+    if (!dateStr) return Infinity;
+    const today = new Date();
+    const expiry = new Date(dateStr);
+    if (isNaN(expiry)) return Infinity;
+    
+    // Calculate difference in months
+    let months = (expiry.getFullYear() - today.getFullYear()) * 12;
+    months += expiry.getMonth() - today.getMonth();
+    
+    // Adjust for day of month
+    if (expiry.getDate() < today.getDate()) {
+      months--;
+    }
+    
+    return months;
+  },
+
+  // CHANGED: Now uses months instead of days
   getStatus(dateStr) {
-    const days = this.daysUntil(dateStr);
-    if (days < 0) return 'expired';
-    if (days <= CONFIG.EXPIRY_SOON_DAYS) return 'expiring';
+    const months = this.monthsUntil(dateStr);
+    if (months < 0) return 'expired';
+    if (months <= CONFIG.EXPIRY_SOON_MONTHS) return 'expiring';
     return 'ok';
   },
 
